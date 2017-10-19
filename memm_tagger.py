@@ -33,7 +33,15 @@ MINIMUM_FEAT_COUNT = 2
 # L2 regularization strength; range is (0,infinity), with stronger regularization -> 0 (in this package)
 L2_REGULARIZATION_STRENGTH = 1e0
 
+ABLATE = None
+NEW_FEATURES = ['FIRST_WORD_IN_SEQUENCE', 'PREV_WORD_', 'PREV_BIGRAM_', 'NEXT_WORD_', 'NEXT_BIGRAM_', 'TRIGRAM_', 'NUMBER', 'SYMBOL_', 'CAPITALIZED', 'SUFFIX_']
+
 SYMBOLS = "`~!@#$%^&*()_+-=\][|}{';\":/.,?><"
+SUFFIXES_2 = ['ly', 'ty', 'er', 'ed', 'al', 'ic', 'en', 'cy']
+SUFFIXES_3 = ['ful', 'ize', 'ing', 'dom', 'age', 'sis', 'ism', 'ity', 'ant', 'ily', 'ely', 'ive', 'ble', 'ous', 'ish', 'ian', 'ist', 'ize', 'ise', 'yse', 'ate', 'ify', 'ive', 'ial', 'est']
+SUFFIXES_4 = ['ment', 'ness', 'sion', 'tion', 'ance', 'hood', 'ship', 'cess', 'less', 'like', 'some', 'fine']
+SUFFIXES_5 = ['worthy']
+SUFFIX_GROUPS = {2: SUFFIXES_2, 3: SUFFIXES_3, 4: SUFFIXES_4, 5: SUFFIXES_5}
 
 # load up any external resources here
 def initialize():
@@ -99,6 +107,21 @@ def get_features(index, sequence, tag_index_1, data):
     if sequence[index].lower() != sequence[index]:
         # if there exists capitalized letters
         features["CAPITALIZED"] = 1
+    for suffix_len, suffixes in SUFFIX_GROUPS.items():
+        if len(sequence[index]) > suffix_len + 2 and sequence[index][-suffix_len:] in suffixes:
+            suffix = sequence[index][-suffix_len:]
+            features["SUFFIX_%s" % suffix] = 1
+
+    import pdb; pdb.set_trace()
+    if ABLATE != None:
+        ablation_prefix = NEW_FEATURES[ABLATE]
+        remove_features = []
+        for f in features:
+            if f.startswith(ablation_prefix):
+                remove_features.append(f)
+        for f in remove_features:
+            features.pop(f)
+    import pdb; pdb.set_trace()
 
     return features
 
@@ -366,6 +389,7 @@ def test(filename, log_reg, data):
             total += 1
 
         print("Development Accuracy: %.3f (%s/%s)." % (correct / total, correct, total), end="\r")
+    print("Final Development Accuracy: %.3f (%s/%s)." % (correct / total, correct, total))
 
 
 def print_message(m):
@@ -401,6 +425,15 @@ def main():
         log_reg = train(sys.argv[2], data)
         print_message("Test Model")
         test(sys.argv[3], log_reg, data)
+    elif sys.argv[1] == "-a":
+        global ABLATE
+        ABLATE = int(sys.argv[2])
+        print_message("Initialize Data")
+        data = initialize()
+        print_message("Train Model")
+        log_reg = train(sys.argv[3], data)
+        print_message("Test Model")
+        test(sys.argv[4], log_reg, data)
     elif sys.argv[1] == "-v":
         label_vocab, Y_pred = load_vars()
         predicted_path = viterbi_decode(Y_pred)
