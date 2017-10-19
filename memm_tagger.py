@@ -112,7 +112,6 @@ def get_features(index, sequence, tag_index_1, data):
             suffix = sequence[index][-suffix_len:]
             features["SUFFIX_%s" % suffix] = 1
 
-    import pdb; pdb.set_trace()
     if ABLATE != None:
         ablation_prefix = NEW_FEATURES[ABLATE]
         remove_features = []
@@ -121,7 +120,6 @@ def get_features(index, sequence, tag_index_1, data):
                 remove_features.append(f)
         for f in remove_features:
             features.pop(f)
-    import pdb; pdb.set_trace()
 
     return features
 
