@@ -1,0 +1,89 @@
+no new features, with viterbi:
+==============================
+[22:06:57 andy@hw4]$ python memm_tagger.py -t wsj.pos.train wsj.pos.dev
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 22561**********
+**********Test Model**********
+[22:56:59 andy@hw4]$  0.923 (149267.0/161794.0).
+
+All features (no ablation):
+==========================
+[ec2-user@ip-172-31-23-92 pos_tagger]$ python3 memm_tagger.py -t wsj.pos.train wsj.pos.dev
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340628**********
+**********Test Model**********
+Final Development Accuracy: 0.964 (155918.0/161794.0).
+
+Ablation tests:
+===============
+[ec2-user@ip-172-31-23-92 pos_tagger]$ python3 memm_tagger.py -a 0 wsj.pos.train wsj.pos.dev
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340627**********
+**********Test Model**********
+Final Development Accuracy: 0.964 (155913.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_1.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 318370**********
+**********Test Model**********
+Final Development Accuracy: 0.963 (155749.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_2.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 244627**********
+**********Test Model**********
+Final Development Accuracy: 0.963 (155852.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_3.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 318544**********
+**********Test Model**********
+Final Development Accuracy: 0.960 (155292.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_4.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 244627**********
+**********Test Model**********
+Final Development Accuracy: 0.963 (155810.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_5.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 258968**********
+**********Test Model**********
+Final Development Accuracy: 0.964 (155928.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_6.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340627**********
+**********Test Model**********
+Final Development Accuracy: 0.963 (155793.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 results]$ cat ablation_7.txt
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340609**********
+**********Test Model**********
+Final Development Accuracy: 0.964 (155918.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 pos_tagger]$ python3 memm_tagger.py -a 8 wsj.pos.train wsj.pos.dev
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340627**********
+**********Test Model**********
+Final Development Accuracy: 0.954 (154289.0/161794.0).
+
+[ec2-user@ip-172-31-23-92 pos_tagger]$ python3 memm_tagger.py -a 9 wsj.pos.train wsj.pos.dev
+**********Initialize Data**********
+**********Train Model**********
+**********Number of features: 340587**********
+**********Test Model**********
+Final Development Accuracy: 0.958 (155023.0/161794.0).

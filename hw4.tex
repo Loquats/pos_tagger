@@ -1,0 +1,127 @@
+\documentclass[11pt]{exam}
+\noprintanswers
+\usepackage{amsmath,amssymb,amsthm,bm,hyperref}
+\usepackage[parfill]{parskip}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\graphicspath{ {images/} }
+\newtheoremstyle{quest}{\topsep}{\topsep}{}{}{\bfseries}{}{ }{\thmname{#1}\thmnote{ #3}.}
+\theoremstyle{quest}
+
+\newcommand{\name}{Info 159: Natural Language Processing}
+\newcommand{\hw}{4}
+
+\title{
+\Large \name
+\\\vspace{10pt}
+\Large Homework \hw
+\\\vspace{10pt}
+}
+\date{}
+\author{}
+
+\markright{\name\hfill Homework \hw\hfill}
+
+%% If you want to define a new command, you can do it like this:
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+
+%% If you want to use a function like ''sin'' or ''cos'', you can do it like this
+% \DeclareMathOperator{\sin}{sin}   %% just an example (it's already defined)
+
+\begin{document}
+\maketitle
+
+\begin{picture}(0,0)
+\put(0,180){\textbf{Name: Yue Andy Zhang} \hspace{6cm} \textbf{Student ID: 25116308}}
+\end{picture}
+\vspace{-1.25in}
+
+\begin{enumerate}
+	\item \textbf{Viterbi decoding} \\
+	See code.
+
+	\item \textbf{Features} \\
+	In addition to the default features (unigram, previous tag, last word in sentence), I added the following features:
+	\begin{enumerate}
+		\item \textit{First word in sentence} \\
+		Whether or not the current word is the first word in the sequence. \\
+		Rationale: Some parts of speech may occur more/less frequently as the first word in the sentence.
+		
+		\item \textit{Previous word} \\
+		The word that precedes the current word, if it exists. \\
+		Rationale: The previous word may provide context for the current word's POS. 
+		
+		\item \textit{Previous bigram} \\
+		A bigram of the preceding and current word, if a preceding word exists. \\
+		Rationale: The previous word, conditioning on both the previous and current word occurring together as a phrase, may provide context for the current word's POS. 
+				
+		\item \textit{Next word} \\
+		The word that follows the current word, if it exists.\\
+		Rationale: The next word may provide context for the current word's POS. 
+		
+		\item \textit{Next bigram} \\
+		A bigram of the current and next word, if a next word exists. \\
+		Rationale: The next word, conditioning on both the current and next word occurring together as a phrase, may provide context for the current word's POS. 
+
+		\item \textit{Trigram} \\
+		A trigram of the preceding, current, and next word, if both the previous and next words exist. \\
+		Rationale: Similar to Previous bigram and Next bigram, but conditioning on a 3-word phrase. 
+		
+		\item \textit{Number} \\
+		Whether or not the current word is number-like (consists of one or more digits and zero or more `.') \\
+		Rationale: Disambiguate numbers from words. 
+		
+		\item \textit{Symbol} \\
+		Whether or not the current word is a symbol, and which symbol it is. Symbols are defined as one of the following characters: \\
+		\`\textasciitilde!@\#\$\%\textasciicircum\&*()\_+-=\textbackslash][$|$\}\{';":/.,?$><$. \\
+		Rationale: Disambiguate puncutation from words.
+		
+		\item \textit{Capitalization} \\
+		Whether or not the current word contains any capital letters (not necessarily as the first character). \\
+		Rationale: Words with capitalization may be more likely to be proper nouns, ie. if the first letter is capitalized or if the word is an all-caps acronym.
+		
+		\item \textit{Suffixes} \\
+		Whether or not the current word contains one of the following suffixes, and which suffix it is. Suffixes: \\
+		`ly', `ty', `er', `ed', `al', `ic', `en', `cy' \\
+		`ful', `ize', `ing', `dom', `age', `sis', `ism', `ity', `ant', `ily', `ely', `ive', `ble', `ous', `ish', `ian', `ist', `ize', 		`ise', `yse', `ate', `ify', `ive', `ial', `est' \\
+		`ment', `ness', `sion', `tion', `ance', `hood', `ship', `cess', `less', `like', `some', `fine' \\
+		`worthy' \\
+	Rationale: Suffixes indicate part of speech, ie. many adverbs end in `ly'; certain verb tenses end in `ed", `ing'; certain suffices such as `dom', `ism' indicate nouns. 
+		
+	\end{enumerate}
+
+	\item \textbf{Ablation tests} \\
+	\begin{center}
+	\begin{tabular}{ |c|c|c|c| } 
+	\hline
+	\textbf{Feature} & \textbf{\# correct labels} & \textbf{Accuracy} & \textbf{Ablation} \\ 
+	\hline
+	\hline
+	\textbf{Full model} & 155918 & \textbf{0.964} & 0 \\ \hline
+	Only default features (ablate all) & 149267 & 0.923 & -0.041\\ \hline
+	\hline
+	First word & 155913 & 0.964 & $\approx$0\\ \hline
+	Previous word & 155749 & 0.963 & -0.001 \\ \hline
+	Previous bigram & 155852 & 0.963 & -0.001 \\ \hline
+	Next word & 155292 & 0.960 & -0.004 \\ \hline
+	Next bigram & 155810 & 0.963 & -0.001 \\ \hline
+	Trigram & 155928 & 0.964 & $\approx$0\\ \hline
+	Number & 155793 & 0.963 & -0.001\\ \hline
+	Symbol & 155918 & 0.964 & 0 \\ \hline
+	Capitalization & 154289 & 0.954 & -0.01\\ \hline
+	Suffix & 155023 & 0.958 & -0.006\\ \hline
+\end{tabular}
+\end{center}
+There were a total of 161794 samples in the evaluation set. \\
+\\
+Notable results: \\
+It's interesting to note that ablating the trigram feature actually improved accuracy, albeit very slightly. The symbol feature had no effect on accuracy, and whether or not the word is the first word in the sequence had a negligible effect. The three most effective features from the ablation test were: presence of capitalization (1\%), suffixes (0.6\%), and the next word (0.4\%). \\
+Also, since previous word and previous bigram were probably somewhat redundant features, ablating both features at the same time may have a more pronounced effect than just ablating one feature, and similarly for next word and next bigram. 
+
+\end{enumerate}
+
+\end{document}

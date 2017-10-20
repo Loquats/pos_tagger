@@ -168,7 +168,6 @@ def viterbi_decode(Y_pred):
         this entire class.
 
     """
-    # (words, labels)
     # (START + number of words) * (START + number of labels)
     viterbi = np.zeros((N, L))
     backpointers = np.zeros((N, L), dtype=np.int32)
@@ -177,14 +176,11 @@ def viterbi_decode(Y_pred):
     start = cur
     backpointers[0,:] = start
     viterbi[0,:] = np.log(Y_pred[0,start,:])
-    # for label in range(L):
-        # viterbi[0, label] = np.log(Y_pred[0,start,label])
 
-    for t in range(1, N):           # don't include START, the first t
-        for label in range(L):      # don't include START, the last label
+    for t in range(1, N):
+        for label in range(L):
             update = np.add(viterbi[t-1,:], np.log(Y_pred[t,:-1,label]))
             backpointers[t, label] = np.argmax(update)
-            # viterbi[t, label] = np.max(update)
             viterbi[t, label] = update[backpointers[t, label]]
 
     # initialize as the last label
@@ -387,7 +383,7 @@ def test(filename, log_reg, data):
             total += 1
 
         print("Development Accuracy: %.3f (%s/%s)." % (correct / total, correct, total), end="\r")
-    print("Final Development Accuracy: %.3f (%s/%s)." % (correct / total, correct, total))
+    # print("Final Development Accuracy: %.3f (%s/%s)." % (correct / total, correct, total))
 
 
 def print_message(m):
@@ -423,15 +419,17 @@ def main():
         log_reg = train(sys.argv[2], data)
         print_message("Test Model")
         test(sys.argv[3], log_reg, data)
-    elif sys.argv[1] == "-a":
-        global ABLATE
-        ABLATE = int(sys.argv[2])
-        print_message("Initialize Data")
-        data = initialize()
-        print_message("Train Model")
-        log_reg = train(sys.argv[3], data)
-        print_message("Test Model")
-        test(sys.argv[4], log_reg, data)
+    # new flag for ablation testing
+    # usage python memm_tagger.py -a 0 wsj.pos.train wsj.pos.dev
+    # elif sys.argv[1] == "-a":
+    #     global ABLATE
+    #     ABLATE = int(sys.argv[2])
+    #     print_message("Initialize Data")
+    #     data = initialize()
+    #     print_message("Train Model")
+    #     log_reg = train(sys.argv[3], data)
+    #     print_message("Test Model")
+    #     test(sys.argv[4], log_reg, data)
     elif sys.argv[1] == "-v":
         label_vocab, Y_pred = load_vars()
         predicted_path = viterbi_decode(Y_pred)
